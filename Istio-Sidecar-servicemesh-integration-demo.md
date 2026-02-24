@@ -122,3 +122,4 @@ sum(rate(istio_requests_total{namespace="devops-test"}[1m]))
 ```
 sum(rate(istio_requests_total{namespace="devops-test"}[1m]))
 ```
+Export dashboard JSON : https://github.com/purvalpatel/kubernetes-tutorial/blob/483eb50985bb515a2e1f166c81ad0fbe8079a744/Istio%20Mesh%20Dashboard-1771929073978.json <br>
