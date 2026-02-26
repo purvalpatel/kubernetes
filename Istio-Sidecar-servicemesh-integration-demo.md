@@ -242,4 +242,77 @@ Add visualization -> Type (logs) -> Set "Panel name"
 ## Traces Collection:
 ```
 Traces -> Jaeger/Tempo -> UI
+
+App → OTEL Collector → Jaeger
+```
+There is `jaeger collector` also but there is Limited flexibility, Harder to extend later. so we  will use `OpenTelemetry Collector`. <br>
+
+### Setup jaeger
+```
+helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
+helm repo update
+helm install jaeger jaegertracing/jaeger   --namespace observability
+```
+
+### Setup opentelemetry-collector.
+1. Create `otel-values.yaml`
+```
+mode: deployment
+
+image:
+  repository: otel/opentelemetry-collector-contrib
+
+config:
+  receivers:
+    otlp:
+      protocols:
+        grpc: {}
+        http: {}
+
+  processors:
+    memory_limiter:
+      check_interval: 5s
+      limit_mib: 400
+      spike_limit_mib: 100
+    batch: {}
+
+  exporters:
+    otlp:
+      endpoint: jaeger.observability.svc.cluster.local:4317
+      tls:
+        insecure: true
+
+  service:
+    pipelines:
+      traces:
+        receivers: [otlp]
+        processors: [memory_limiter, batch]
+        exporters: [otlp]
+
+service:
+  type: ClusterIP
+
+```
+Install:
+```
+helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+helm repo update
+helm install otel-collector open-telemetry/opentelemetry-collector   --namespace observability   -f otel-values.yaml
+```
+
+Verify it is working fine or not:
+```
+kubectl get all -n observability
+```
+<img width="1909" height="248" alt="image" src="https://github.com/user-attachments/assets/8d1d6f16-bc19-4912-b25f-9b0a4367a6ce" />
+
+Now application should send metrics on opentelemetry - `http://otel-collector.observability.svc.cluster.local:4317`
+
+
+So keeping this part on hold from here.
+
+### Remove everything: [optional]
+```
+helm uninstall jaeger -n observability
+helm uninstall otel-collector -n observability
 ```
