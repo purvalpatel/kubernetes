@@ -2,7 +2,7 @@ Observability with servicemesh:
 ------------------------------
 ```
 metrics -> Prometheus -> Grafana
-Logs -> Loki -> Grafana
+Container Logs -> Promtail/FluentBit -> Loki -> Grafana
 Traces -> Jaeger/Tempo -> UI
 ```
 **Here we are testing for the 1st one. metrics collection with servicemesh.**
@@ -127,13 +127,16 @@ Export dashboard JSON : https://github.com/purvalpatel/kubernetes-tutorial/blob/
 
 
 ## Logs Monitoring with Loki in Grafana (Kubernetes)
-### Setup prometheus. (optional if not done)
-- Fllow link - https://github.com/purvalpatel/kubernetes-tutorial/blob/d08d13ee86fd6766f6181e1659aa13bed3a9fa80/kube-prometheus-grafana-stack.md 
+- Note : This doesnt requires sidecar to be injected.
 
 - Note Loki `2.x.x` version ins not compatible with Grafana `12.x.x` version. the issue is loki is not connecting grafana from web ui. either connectivity works from backend. so for that need to use new version i.e. `3.x.x`.
 - check Grafana version : `kubectl describe pod prometheus-grafana-6444876565-84p67 -n monitoring | grep Image`
 - check loki version: `kubectl -n monitoring get pod loki-0 -o jsonpath="{.spec.containers[*].image}"`
-Install Loki
+
+### Setup prometheus. (optional if not done)
+- Fllow link - https://github.com/purvalpatel/kubernetes-tutorial/blob/d08d13ee86fd6766f6181e1659aa13bed3a9fa80/kube-prometheus-grafana-stack.md 
+
+### Install Loki
 ```
 helm repo add grafana https://grafana.github.io/helm-charts
 helm repo update
@@ -177,7 +180,11 @@ helm install loki grafana/loki \
   -n monitoring \
   -f loki-values.yaml
 ```
-
+### Install promtail:
+- This will collect the logs from the pods. this will run on each node as daemonset.
+```
+helm install promtail grafana/promtail -n monitoring
+```
 Verify it is being installed or not:
 ```
 helm list -n monitoring
@@ -187,3 +194,10 @@ kubectl get pods -n monitoring
 
 Check the connectivity now from Grafana: <br>
 <img width="835" height="233" alt="image" src="https://github.com/user-attachments/assets/ee33b251-3f75-42a9-8e30-ae3267b25183" />
+
+### Create Grafana dashboard:
+- Add visualization -> Type (logs) -> Set "Panel name"
+Query for each deployment.
+```
+{namespace="numol", app="deployment-name"}
+```
