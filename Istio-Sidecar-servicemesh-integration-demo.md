@@ -122,8 +122,10 @@ sum(rate(istio_requests_total{namespace="devops-test"}[1m]))
 ```
 sum(rate(istio_requests_total{namespace="devops-test"}[1m]))
 ```
+
 Export dashboard JSON : https://github.com/purvalpatel/kubernetes-tutorial/blob/483eb50985bb515a2e1f166c81ad0fbe8079a744/Istio%20Mesh%20Dashboard-1771929073978.json <br>
 
+🎯 Metrics collection is completed here.
 
 
 ## Logs Monitoring with Loki in Grafana (Kubernetes)
@@ -234,3 +236,10 @@ Add visualization -> Type (logs) -> Set "Panel name"
 - Panel Name: `Logs - $namespace / $deployment`
 
 <img width="1062" height="404" alt="image" src="https://github.com/user-attachments/assets/a044dba2-6a9b-4352-bb69-1469b31360d4" />
+
+🎯 Logs Collection is completed here.
+
+## Traces Collection:
+```
+Traces -> Jaeger/Tempo -> UI
+```
