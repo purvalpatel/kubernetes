@@ -308,9 +308,6 @@ kubectl get all -n observability
 
 Now application should send metrics on opentelemetry - `http://otel-collector.observability.svc.cluster.local:4317` <br>
 
-
-So keeping this part on hold from here. <br>
-
 Allow Jaeger to open in browser:
 ```
 kubectl patch svc jaeger -n observability -p '{"spec": {"type": "NodePort"}}'}'
@@ -323,3 +320,54 @@ helm uninstall jaeger -n observability
 helm uninstall otel-collector -n observability
 ```
 <img width="1912" height="788" alt="image" src="https://github.com/user-attachments/assets/0ea7b61e-471d-483e-b1f1-a3a5b709ea35" />
+
+### How to Test:
+**Step 1 — Start a test pod inside cluster** <br>
+```
+kubectl run otel-test \
+  --image=python:3.11 \
+  -n observability \
+  -it --rm -- bash
+```
+Now you're inside the pod. <br>
+
+**Step 2 — Install dependencies** <br>
+Inside the pod: <br>
+```
+pip install opentelemetry-sdk \
+            opentelemetry-exporter-otlp \
+            opentelemetry-api
+```
+**Step 3 — Create test script** <br>
+
+Inside the pod: <br>
+```
+cat <<EOF > test.py
+from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+trace.set_tracer_provider(TracerProvider())
+tracer = trace.get_tracer(__name__)
+
+exporter = OTLPSpanExporter(
+    endpoint="http://otel-collector-opentelemetry-collector:4317",
+    insecure=True,
+)
+
+trace.get_tracer_provider().add_span_processor(
+    BatchSpanProcessor(exporter)
+)
+
+with tracer.start_as_current_span("nuvo-test-span"):
+    print("Trace sent successfully")
+EOF
+```
+**Step 4 — Run it** <br>
+```
+python test.py
+```
+
+Step 5 - Check logs in Jaeger UI now <br>
+<img width="1912" height="671" alt="image" src="https://github.com/user-attachments/assets/852f4f1d-7ef3-4940-9577-5003ed288ffe" />
