@@ -371,3 +371,5 @@ python test.py
 
 Step 5 - Check logs in Jaeger UI now <br>
 <img width="1912" height="671" alt="image" src="https://github.com/user-attachments/assets/852f4f1d-7ef3-4940-9577-5003ed288ffe" />
+
+🎯 Traces Collection is completed here.
