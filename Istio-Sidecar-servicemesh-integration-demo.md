@@ -127,6 +127,9 @@ Export dashboard JSON : https://github.com/purvalpatel/kubernetes-tutorial/blob/
 
 
 ## Logs Monitoring with Loki in Grafana (Kubernetes)
+### Setup prometheus. (optional if not done)
+- Fllow link - https://github.com/purvalpatel/kubernetes-tutorial/blob/d08d13ee86fd6766f6181e1659aa13bed3a9fa80/kube-prometheus-grafana-stack.md 
+
 - Note Loki `2.x.x` version ins not compatible with Grafana `12.x.x` version. the issue is loki is not connecting grafana from web ui. either connectivity works from backend. so for that need to use new version i.e. `3.x.x`.
 - check Grafana version : `kubectl describe pod prometheus-grafana-6444876565-84p67 -n monitoring | grep Image`
 - check loki version: `kubectl -n monitoring get pod loki-0 -o jsonpath="{.spec.containers[*].image}"`
