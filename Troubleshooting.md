@@ -60,3 +60,8 @@ rm -rf /var/lib/kubelet/ 2>/dev/null || echo "Some files still busy, will clean 
 # Clean up container runtime
 systemctl restart containerd
 ```
+
+Verify permissions:
+```
+kubectl auth can-i create deployments --namespace=ml-dev
+```
