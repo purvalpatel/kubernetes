@@ -82,7 +82,10 @@ kubectl apply -f https://github.com/kserve/kserve/releases/download/v0.11.0/kser
 ```
 <img width="1210" height="590" alt="image" src="https://github.com/user-attachments/assets/7610a12d-cf75-4861-a59b-a03b86151db5" />
 
-
+Verify:
+```
+kubectl get all -n kserve
+```
 3. Install `Knative`
 ```
 kubectl apply -f https://github.com/knative/serving/releases/latest/download/serving-crds.yaml
