@@ -86,7 +86,9 @@ Verify:
 ```
 kubectl get all -n kserve
 ```
-3. Install `Knative`
+<img width="1084" height="292" alt="image" src="https://github.com/user-attachments/assets/1f9aae7e-42c6-4edc-ab7f-6a834accc0cc" />
+
+3. Install `Knative` [optional]
 ```
 kubectl apply -f https://github.com/knative/serving/releases/latest/download/serving-crds.yaml
 kubectl apply -f https://github.com/knative/serving/releases/latest/download/serving-core.yaml
