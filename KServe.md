@@ -93,3 +93,66 @@ kubectl get all -n kserve
 kubectl apply -f https://github.com/knative/serving/releases/latest/download/serving-crds.yaml
 kubectl apply -f https://github.com/knative/serving/releases/latest/download/serving-core.yaml
 ```
+
+Model vs. LLM
+-------------
+
+### Model
+Any Machine learning program trained on data to make predictions. <br>
+
+example, 
+- spam detection model
+- image recognition model
+- Recommendataion model
+- Language model
+
+Trained AI system that perfoem a task. <br>
+
+
+### LLM : Lanrge language model
+
+- Specific type of model trained on huge text, datasets to understand & generate language. <br>
+GPT4, Llama2, Mistral
+
+
+vehicle = Model <br>
+Car = LLM <Br>
+
+| Feature    | Model         | LLM                  |
+| ---------- | ------------- | -------------------- |
+| Definition | any ML model  | large language model |
+| Data used  | any data      | text data            |
+| Size       | small → large | very large           |
+| Use case   | many tasks    | language tasks       |
+
+
+**In Kserve we can define vLLM runtime** <br>
+
+### Architecture:
+```
+User
+  │
+  ▼
+KServe (deployment + autoscaling)
+  │
+  ▼
+vLLM (fast inference engine)
+  │
+  ▼
+LLM (Llama / Mistral)
+```
+
+### Example YAML:
+```YAML
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: llama2
+spec:
+  predictor:
+    model:
+      modelFormat:
+        name: vllm
+      storageUri: "hf://meta-llama/Llama-2-7b-chat-hf"
+      runtime: kserve-vllm-runtime
+```
