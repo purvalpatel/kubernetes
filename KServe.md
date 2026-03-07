@@ -208,8 +208,8 @@ For example, Model is stored in `s3://numol/test-purval/iris_model.pkl` <br>
 ### STEP 3 -- Create secret in kubernetes for s3 :
 ```
 kubectl create secret generic s3-secret \
---from-literal=AWS_ACCESS_KEY_ID=0B3AN861NUCZ5G1T61WT \
---from-literal=AWS_SECRET_ACCESS_KEY=_pUoc4IqCbYX2LC87w7KU8Kfjg11gK83id50A408
+--from-literal=AWS_ACCESS_KEY_ID=0B3AxN861NUCZ5xxG1T61WTx \
+--from-literal=AWS_SECRET_ACCESS_KEY=_pUoc4IqCbxxYX2LC87w7KU8Kfjxg11gK83id50A408
 ```
 OR by YAML, `s3-secret.yaml`    [Suggested]
 ```
@@ -218,7 +218,7 @@ kind: Secret
 metadata:
   name: netapp-s3-secret
   annotations:
-    serving.kserve.io/s3-endpoint: mns3011.nuvo-ai.com
+    serving.kserve.io/s3-endpoint: mns3011.xxxx-ai.com
     serving.kserve.io/s3-usehttps: "0"
     serving.kserve.io/s3-verifyssl: "0"
 type: Opaque
