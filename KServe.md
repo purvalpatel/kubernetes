@@ -163,3 +163,225 @@ spec:
       storageUri: "hf://meta-llama/Llama-2-7b-chat-hf"
       runtime: kserve-vllm-runtime
 ```
+
+
+---------------------------
+### STEP 1 -- Sample program for generating model file [Optional]
+Create, `sample_model_create.py`
+```
+# train_model.py
+import joblib
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+
+# Load the Iris dataset
+iris = load_iris()
+X_train, X_test, y_train, y_test = train_test_split(iris.data, iris.target, test_size=0.2)
+
+# Train the model
+model = RandomForestClassifier(n_estimators=100)
+model.fit(X_train, y_train)
+
+# Save the model to a file
+joblib.dump(model, "iris_model.pkl")
+```
+Run:
+```
+python sample_model_create.py
+```
+Store model into S3 registry: `iris_model.pkl`
+### STEP 2 -- install CRDS:
+```
+kubectl apply -f https://github.com/kserve/kserve/releases/latest/download/kserve.yaml
+```
+
+Use `create` instead of apply if getting error of Size,
+```
+kubectl create -f https://github.com/kserve/kserve/releases/latest/download/kserve.yaml
+or
+kubectl apply --server-side -f https://github.com/kserve/kserve/releases/latest/download/kserve.yaml
+```
+
+For example, Model is stored in `s3://numol/test-purval/iris_model.pkl` <br>
+
+### STEP 3 -- Create secret in kubernetes for s3 :
+```
+kubectl create secret generic s3-secret \
+--from-literal=AWS_ACCESS_KEY_ID=0B3AN861NUCZ5G1T61WT \
+--from-literal=AWS_SECRET_ACCESS_KEY=_pUoc4IqCbYX2LC87w7KU8Kfjg11gK83id50A408
+```
+OR by YAML, `s3-secret.yaml`    [Suggested]
+```
+apiVersion: v1
+kind: Secret
+metadata:
+  name: netapp-s3-secret
+  annotations:
+    serving.kserve.io/s3-endpoint: mns3011.nuvo-ai.com
+    serving.kserve.io/s3-usehttps: "0"
+    serving.kserve.io/s3-verifyssl: "0"
+type: Opaque
+stringData:
+  AWS_ACCESS_KEY_ID: 0B3AN86s1NUCZd5G1T61WTx
+  AWS_SECRET_ACCESS_KEY: _pUoc4IqCbYXxx2LC87w7KU8Kfjg11xgK83id50A408
+```
+
+### STEP 4 -- Create serviceAccount for Kserve, `serviceaccount.yaml`:
+```
+apiVersion: v1
+kind: ServiceAccount
+metadata: 
+  name: s3-sa
+secrets:
+- name: netapp-s3-secret
+```
+
+### STEP 5 -- Create inference service `model.yaml`:
+
+```
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: sklearn-model
+spec:
+  predictor:
+    serviceAccountName: s3-sa
+    sklearn:
+      storageUri: "s3://numol/test-purval/"
+      image: kserve/sklearnserver:latest
+```
+
+Apply:
+```
+kubectl apply -f model.yaml
+```
+
+List: 
+```
+kubectl get inferenceservice
+```
+
+Output:
+```
+NAME            URL   READY   PREV   LATEST   PREVROLLEDOUTREVISION    LATESTREADYREVISION   AGE
+sklearn-model
+```
+### Error 1:
+***Error : It is not possible to use Knative deployment mode when Knative Services are not available***
+
+if showing like this then there is  issue:
+```
+kubectl describe inferenceservice sklearn-model
+```
+
+####  Now install Knative: [optional]
+CRDS:
+```
+kubectl apply -f https://github.com/knative/serving/releases/latest/download/serving-crds.yaml
+```
+
+Core Components:
+```
+kubectl apply -f https://github.com/knative/serving/releases/latest/download/serving-core.yaml
+```
+
+Networking : 
+```
+kubectl apply -f https://github.com/knative/net-istio/releases/latest/download/net-istio.yaml
+```
+
+verify:
+```
+kubectl get pods -n knative-serving
+```
+
+Note: ***Disable Knative*** If you don't need serverless scaling, you can run KServe in Raw Deployment Mode.
+
+### Edit configmap:
+```
+kubectl edit configmap inferenceservice-config -n kserve
+```
+change:
+```
+deploy:
+  defaultDeploymentMode: serverless
+```
+To 
+```
+deploy:
+  defaultDeploymentMode: RawDeployment
+```
+
+- ***RawDeployment*** is best for OnPremises clusters.
+- ***Knative*** is for Serveless and scaling.
+
+### Error 2:
+After edit got this another error: <br>
+***no runtime found to support predictor with model type***
+
+```
+  Type     Reason         Age                   From                Message
+  ----     ------         ----                  ----                -------
+  Warning  InternalError  28s (x16 over 3m12s)  v1beta1Controllers  no runtime found to support predictor with model type: {sklearn <nil>}
+```
+
+***In older setups with Knative, KServe automatically installs runtimes.***
+
+But in ***RawDeployment*** mode, you must install runtimes manually like:
+```
+sklearn runtime
+pytorch runtime
+tensorflow runtime
+triton runtime
+vllm runtime
+```
+
+### STEP 6 -- Install runtime:
+```
+kubectl apply -n kserve -f https://raw.githubusercontent.com/kserve/kserve/release-0.12/config/runtimes/kserve-sklearnserver.yaml
+```
+
+verify:
+```
+kubectl get clusterservingruntime
+```
+
+Okay, now pod is running:
+```
+kubectl get inferenceservice
+```
+Output:
+```
+NAME            URL                                        READY   PREV   LATEST   PREVROLLEDOUTREVISION   LATESTREADYREVISION   AGE
+sklearn-model   http://sklearn-model-default.example.com   True                                                                  3h10m
+```
+
+Kserve will create automatic k8s resources:
+```
+kubectl get svc 
+```
+### STEP 7 --Test Mode Inferencing:
+
+Forward port for testing:
+
+```
+kubectl port-forward svc/sklearn-model-predictor 8082:80
+```
+Test  with curl:
+```
+curl -X POST http://localhost:8082/v1/models/sklearn-model:predict \
+     -H "Content-Type: application/json" \
+     -d '{
+           "instances": [
+             [5.1, 3.5, 1.4, 0.2],
+             [6.2, 3.4, 5.4, 2.3]
+           ]
+         }'
+{"predictions":[0,2]}
+```
+
+output:
+```
+{"predictions":[0,2]}
+```
