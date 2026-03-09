@@ -312,6 +312,7 @@ To
 deploy:
   defaultDeploymentMode: RawDeployment
 ```
+- **Restart** all Kserve Pods.
 
 - ***RawDeployment*** is best for OnPremises clusters.
 - ***Knative*** is for Serveless and scaling.
