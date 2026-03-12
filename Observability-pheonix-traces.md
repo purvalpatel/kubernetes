@@ -185,3 +185,9 @@ OpenTelemetry Collector (Zipkin receiver)
  ↓
 Phoenix (OTLP exporter)
 ```
+
+> This will only show the Spans, not the Response, Token and prompt.
+> For getting this details we need small service i.e. application API.
+
+<img width="1917" height="892" alt="image" src="https://github.com/user-attachments/assets/ee8a8c73-e447-47d2-a03a-f66052717f21" />
+
