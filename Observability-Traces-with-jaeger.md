@@ -69,7 +69,7 @@ Now application should send metrics on opentelemetry - `http://otel-collector.ob
 
 Allow Jaeger to open in browser:
 ```
-kubectl patch svc jaeger -n observability -p '{"spec": {"type": "NodePort"}}'}'
+kubectl patch svc jaeger -n observability -p '{"spec": {"type": "NodePort"}}'
 ```
 you can use NodePort of `http://localhost:16686`
 
