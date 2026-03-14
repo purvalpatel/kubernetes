@@ -319,7 +319,26 @@ Kubernetes Object Categories:
 <img width="1421" height="851" alt="Untitled Diagram drawio(3)" src="https://github.com/user-attachments/assets/df669989-d929-493a-93a5-5583b8cb78da" />
 
 
+## Install Kubernetes 1.33.9 version
 
 
+Add repo:
+```
+sudo apt-get update
+sudo apt-get install -y apt-transport-https ca-certificates curl
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+```
 
+Install:
+```
+sudo apt update
+sudo apt install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
+```
+
+### Initialize Control Plane:
+```
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+```
 
