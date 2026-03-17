@@ -544,3 +544,65 @@ spec:
       end:   "0 21 * * *"    # 9 PM
       desiredReplicas: "3"
 ```
+
+## GPU Memory calculation for H100 GPU'S  Cluster only.
+```
+  - type: prometheus
+    metadata:
+      name: gpu_memory_utilization
+      serverAddress: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
+      metricName: gpu_memory_utilization
+      threshold: "96"
+      query: |
+        max(
+          DCGM_FI_DEV_FB_USED{
+            exported_namespace="vllm",
+            exported_pod=~"vllm-llama.*"
+          }
+        ) / 81920 * 100    ## this is according to H100 - 80GB RAM
+
+```
+## GPU Memory Calculation for Mixed Cluster - H100 and H200.
+```
+  ## below is work according to any GPU h100 and H200
+  - type: prometheus
+    metadata:
+      name: gpu_memory_utilization
+      serverAddress: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
+      metricName: gpu_memory_utilization
+      threshold: "95"
+      query: |
+        max(
+          DCGM_FI_DEV_FB_USED{
+            exported_namespace="vllm",
+            exported_pod=~"vllm-llama.*"
+          }
+        )
+        /
+        (
+          max(
+            DCGM_FI_DEV_FB_USED{
+              exported_namespace="vllm",
+              exported_pod=~"vllm-llama.*"
+            }
+          )
+          +
+          max(
+            DCGM_FI_DEV_FB_FREE{
+              exported_namespace="vllm",
+              exported_pod=~"vllm-llama.*"
+            }
+          )
+        )
+        * 100
+```
+## Set Stabilization window
+> Default Cooldown stabilization for HPA is 300 Seconds.
+```
+  # 👉 default stabilizatinwindow for HPA is 300 seconds.
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleDown:
+          stabilizationWindowSeconds: 60
+```
