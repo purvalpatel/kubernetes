@@ -606,3 +606,106 @@ spec:
         scaleDown:
           stabilizationWindowSeconds: 60
 ```
+## ScaledObject for LLM models:
+```
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: llama3-keda-scaler
+  namespace: vllm
+spec:
+  scaleTargetRef:
+    name: vllm-llama
+
+  minReplicaCount: 1
+  maxReplicaCount: 3
+
+  pollingInterval: 10  # Every 10 seconds KEDA checks Prometheus metrics
+  cooldownPeriod: 60  # KEDA waits 60 seconds after the last high load and scale down.
+
+  # 👉 default stabilizatinwindow for HPA is 300 seconds.
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleDown:
+          stabilizationWindowSeconds: 60
+
+  triggers:
+
+  - type: cpu
+    metricType: Utilization
+    metadata:
+      value: "70"
+
+  - type: memory
+    metricType: Utilization
+    metadata:
+      value: "80"
+
+    # Request per second.
+  - type: prometheus
+    metadata:
+      serverAddress: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
+      metricName: llama3_requests
+      threshold: "700"
+      query: |
+        sum(rate(istio_requests_total{destination_workload="vllm-llama"}[1m]))
+
+  # GPU utilization scaling
+  - type: prometheus
+    metadata:
+      name: gpu_utilization
+      serverAddress: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
+      metricName: gpu_utilization
+      threshold: "95"
+      query: |
+        avg(
+          DCGM_FI_DEV_GPU_UTIL{namespace="vllm", pod=~"vllm-llama.*"}
+        )
+# average GPU memory usage of the deployment
+#  - type: prometheus
+#    metadata:
+#      name: gpu_memory_utilization
+#      serverAddress: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
+#      metricName: gpu_memory_utilization
+#      threshold: "96"
+#      query: |
+#        max(
+#          DCGM_FI_DEV_FB_USED{
+#            exported_namespace="vllm",
+#            exported_pod=~"vllm-llama.*"
+#          }
+#        ) / 81920 * 100    ## this is according to H100 - 80GB RAM
+
+  ## below is work according to any GPU h100 and H200
+  - type: prometheus
+    metadata:
+      name: gpu_memory_utilization
+      serverAddress: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
+      metricName: gpu_memory_utilization
+      threshold: "95"
+      query: |
+        max(
+          DCGM_FI_DEV_FB_USED{
+            exported_namespace="vllm",
+            exported_pod=~"vllm-llama.*"
+          }
+        )
+        /
+        (
+          max(
+            DCGM_FI_DEV_FB_USED{
+              exported_namespace="vllm",
+              exported_pod=~"vllm-llama.*"
+            }
+          )
+          +
+          max(
+            DCGM_FI_DEV_FB_FREE{
+              exported_namespace="vllm",
+              exported_pod=~"vllm-llama.*"
+            }
+          )
+        )
+        * 100
+```
