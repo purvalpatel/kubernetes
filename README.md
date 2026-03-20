@@ -124,6 +124,25 @@ Create default config ( on master and worker )
 sudo mkdir -p /etc/containerd
 containerd config default | sudo tee /etc/containerd/config.toml
 ```
+Change default storage of containerd:
+```
+systemctl stop containerd
+systemctl stop kubelet
+Open.
+nano /etc/containerd/config.toml
+Change,
+root = "/data/containerd"      ## provide external storage location here.
+
+## if there is already data in /var/lib/containerd, then sync it.
+sudo rsync -avx /var/lib/containerd/ /data/containerd/
+
+## set permissions.
+sudo chown -R root:root /data/containerd
+
+## restart services
+systemctl restart containerd
+systemctl restart kubelet
+```
 
 Use systemd as cgroup driver
 ```
