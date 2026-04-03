@@ -419,3 +419,43 @@ spec:
 ```
 
 Check with : `https://api.xxx.io:30687/`
+
+### For multiple domains, different certificates:
+```
+# Domain 1
+- port:
+    number: 443
+    name: https-numol
+    protocol: HTTPS
+  hosts:
+  - api.numol.io
+  tls:
+    mode: SIMPLE
+    credentialName: api-numol-io-cert
+
+# Domain 2
+- port:
+    number: 443
+    name: https-xyz
+    protocol: HTTPS
+  hosts:
+  - api.xyz.com
+  tls:
+    mode: SIMPLE
+    credentialName: api-xyz-cert
+```
+
+### For multiple domains, single wildcard certificate:
+```
+servers:
+- port:
+    number: 443
+    name: https-443
+    protocol: HTTPS
+  hosts:
+  - api.numol.io
+  - api.xyz.com
+  tls:
+    mode: SIMPLE
+    credentialName: api-numol-io-cert
+```
