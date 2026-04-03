@@ -376,3 +376,46 @@ Step 5 - Check logs in Jaeger UI now <br>
 <img width="1912" height="671" alt="image" src="https://github.com/user-attachments/assets/852f4f1d-7ef3-4940-9577-5003ed288ffe" />
 
 🎯 Traces Collection is completed here.
+
+
+# Setup Domain and SSL on Gateway:
+- Domain - api.xxxx.io
+- Note: 443 port is already used on host nginx, so cant use it. so using another port for SSL certificate on istio-gateway.
+
+### Create Certificate:
+```
+kubectl create -n istio-system secret tls api-xxxxx-io-cert   --key=/home/xxxxx/xxxx.io/xxxx.key   --cert=/home/xxxx/xxxx.io/xxxx.crt
+```
+
+Add/Update Gateway with below configuration:
+```YAML
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: xxxx-gateway
+  namespace: xxxx
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  # HTTP
+  - port:
+      number: 30043
+      name: http-30043
+      protocol: HTTP
+    hosts:
+    - "*"
+
+  # HTTPS
+  - port:
+      number: 443
+      name: https-443
+      protocol: HTTPS
+    hosts:
+    - api.xxxx.io
+    tls:
+      mode: SIMPLE
+      credentialName: api-xxxx-io-cert
+```
+
+Check with : `https://api.xxx.io:30687/`
