@@ -132,3 +132,129 @@ Step 5 - Check logs in Jaeger UI now <br>
 <img width="1912" height="671" alt="image" src="https://github.com/user-attachments/assets/852f4f1d-7ef3-4940-9577-5003ed288ffe" />
 
 🎯 Traces Collection is completed here.
+
+
+## Traces monitoring with Jaeger and OpenTelemetry Collector:
+The best architecture:
+```
+Istio (auto inject trace headers)
+        ↓
+Microservices (instrumented or auto)
+        ↓
+OpenTelemetry Collector
+        ↓
+Jaeger UI
+```
+
+### Setup Jaeger:
+
+```
+kubectl create ns observability
+
+helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
+helm repo update
+helm install jaeger jaegertracing/jaeger   --namespace observability
+```
+
+### Setup opentelemetry collector:
+otel-values.yaml
+```
+mode: deployment
+
+image:
+  repository: otel/opentelemetry-collector-contrib
+
+config:
+  receivers:
+    otlp:
+      protocols:
+        grpc: {}
+        http: {}
+
+  processors:
+    memory_limiter:
+      check_interval: 5s
+      limit_mib: 400
+      spike_limit_mib: 100
+    batch: {}
+
+  exporters:
+    otlp:
+      endpoint: jaeger.observability.svc.cluster.local:4317
+      tls:
+        insecure: true
+
+  service:
+    pipelines:
+      traces:
+        receivers: [otlp]
+        processors: [memory_limiter, batch]
+        exporters: [otlp]
+
+service:
+  type: ClusterIP
+```
+install:
+```
+helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+helm repo update
+helm install otel-collector open-telemetry/opentelemetry-collector   --namespace observability   -f otel-values.yaml
+```
+
+### Expose Jaeger to NodePort:
+```
+kubectl patch svc jaeger -n observability -p '{"spec": {"type": "NodePort"}}'
+```
+### Check tracing is enabled in istio or not?
+```
+kubectl get configmap istio -n istio-system -o yaml | grep tracing -A 10
+```
+If not then enable it,
+
+Create, `istio-otel.yaml`
+```
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  name: istio-otel
+  namespace: istio-system
+spec:
+  meshConfig:
+    enableTracing: true
+
+    defaultConfig:
+      tracing:
+        sampling: 100
+
+    extensionProviders:
+    - name: otel
+      opentelemetry:
+        service: otel-collector-opentelemetry-collector.observability.svc.cluster.local
+        port: 4317
+
+    defaultProviders:
+      tracing:
+      - otel
+
+```
+
+Apply:
+```
+/home/merai/istio-1.28.0/bin/istioctl install -f /home/merai/istio-otel.yaml
+```
+Rollout changes:
+```
+kubectl rollout restart deployment istiod -n istio-system
+kubectl rollout restart deployment istio-ingressgateway -n istio-system
+```
+
+Restart deployment of application:
+```
+kubectl rollout restart deployment sbdd-frontend -n numol
+```
+
+check:  https://api.numol.io:30687/
+
+### Traces are showing in jaeger UI
+
+<img width="1913" height="943" alt="image" src="https://github.com/user-attachments/assets/edd9c881-595e-49b7-b20c-2bf636fa94fb" />
