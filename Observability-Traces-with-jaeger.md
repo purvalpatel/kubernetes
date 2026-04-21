@@ -240,7 +240,7 @@ spec:
 
 Apply:
 ```
-/home/merai/istio-1.28.0/bin/istioctl install -f /home/merai/istio-otel.yaml
+istioctl install -f istio-otel.yaml
 ```
 Rollout changes:
 ```
