@@ -1,3 +1,12 @@
+# kubernetes Autoscaling has three layers:
+
+| Layer         | Tool          | What it scales                      |
+| ------------- | ------------- | ----------------------------------- |
+| Pod replicas  | HPA / KEDA    | Number of pods                      |
+| Pod resources | VPA           | CPU/memory requests                 |
+| Worker nodes  | **Karpenter** | EC2/VM nodes for unschedulable pods |
+
+
 Auto-scaling with prometheus
 -----------------------------
 
