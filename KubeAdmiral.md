@@ -34,16 +34,16 @@ kubectl apply -f app.yaml
 3. ClusterSelector (Different config per cluster)
 
 ## Without kubeAdmiral:
-OOM On Cluster A 
-→ You manually delete job on A
-→ You manually submit job on C
-→ You manage credentials for each cluster separately
-→ You track state acrosss clusters manually
+OOM On Cluster A  <br>
+→ You manually delete job on A <br>
+→ You manually submit job on C <br>
+→ You manage credentials for each cluster separately <br>
+→ You track state acrosss clusters manually <br>
 
 
 ## With kubeAdmiral:
-OOM On Cluster A 
-→ KubeAdmiral detects the pod unschedulable on A
-→ Automatically migrates to cluster C
-→ Single Control plane handles everything.
+OOM On Cluster A <br>
+→ KubeAdmiral detects the pod unschedulable on A <br>
+→ Automatically migrates to cluster C <br>
+→ Single Control plane handles everything <br>
 
