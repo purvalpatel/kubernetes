@@ -90,3 +90,38 @@ helm uninstall myapp
 `values.yaml`: Default values for your chart. <br>
 `templates/`: Directory containing Kubernetes manifests for deployment, service, and other resources. <br>
 `Chart.yaml`: Metadata about the chart (name, version, etc.). <br>
+
+
+# Cordon
+In Kubernetes, Cordon is node operator that marks the node as unschedulable.
+<br>
+
+Prevents new pods from being scheduled on the node, without affecting the running pods.
+
+```
+kubectl cordon <node-name>
+```
+
+## What Actually happens:
+When you cordon the node:
+- Existing pods → continue running normally.
+- New pods → will not be scheduled on that node.
+- Reseduled pods → Wont be land here.
+
+## Why used?
+- Maintainance
+- Node reboot
+
+```
+kubectl cordon node1
+```
+
+- controlled draining.
+```
+kubectl cordon node1
+kubectl drain node1
+```
+## undo
+```
+kubectl uncordon <node-name>
+```
