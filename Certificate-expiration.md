@@ -82,3 +82,66 @@ Always Have: <br>
 - cert-exporter
 - renewal SOP/documentation
 - etcd backups
+
+
+Certificate Expiration alerts:
+certificate-expiry.sh
+```
+#!/bin/bash
+
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+THRESHOLD=30
+
+OUTPUT=$(kubeadm certs check-expiration 2>/dev/null)
+
+EXPIRING=$(echo "$OUTPUT" | awk -v threshold="$THRESHOLD" '
+
+/CERTIFICATE/ {next}
+/CERTIFICATE AUTHORITY/ {next}
+/^$/ {next}
+/Reading configuration/ {next}
+/FYI:/ {next}
+
+{
+    for(i=1;i<=NF;i++) {
+
+        if($i ~ /^[0-9]+d$/) {
+
+            days=$i
+            gsub("d","",days)
+
+            if(days < threshold) {
+                print $0
+            }
+        }
+    }
+}
+')
+
+echo "$EXPIRING -------------"
+if [ -n "$EXPIRING" ]; then
+
+    echo "Kubernetes certificates expiring soon!"
+    echo "$EXPIRING"
+
+    BOT_TOKEN="YOUR_BOT_TOKEN"
+    CHAT_ID="YOUR_CHAT_ID"
+
+    MESSAGE="⚠️ Kubernetes certificates expiring soon:
+
+$EXPIRING"
+
+## Send alert on slack
+	curl -X POST https://xx-xx-xx.xx.xx/api/method/xxxxx   -H "Authorization: token xxxxxxxx:xxxxxxxxxx"   -H "Content-Type: application/json"   -d '{
+	    "channel_id": "server-alert",
+	    "text": "$MESSAGE",
+	    "severity": "critical",
+	    "source": "Certificate-expired"
+	  }'
+
+else
+    echo "All certificates are healthy."
+fi
+
+```
