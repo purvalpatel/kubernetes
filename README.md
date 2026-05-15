@@ -361,3 +361,70 @@ sudo apt-mark hold kubelet kubeadm kubectl
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 ```
 
+## Certificate Expiration Alerts.
+- Certificate management is mostly yout responsibility if using kubeadm.
+- Kubeadm mostly does not fully automate certificate like RKE2/K3s.
+
+Check Expiration:
+```
+kubeadm certs check-expiration
+```
+
+Manual renew:
+```
+kubeadm certs renew all
+```
+
+Code for sending alerts on certificate expiry, `cert-expiry.sh`
+```
+#!/bin/bash
+
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+THRESHOLD=30
+
+OUTPUT=$(kubeadm certs check-expiration 2>/dev/null)
+
+EXPIRING=$(echo "$OUTPUT" | awk -v threshold="$THRESHOLD" '
+
+/CERTIFICATE/ {next}
+/CERTIFICATE AUTHORITY/ {next}
+/^$/ {next}
+/Reading configuration/ {next}
+/FYI:/ {next}
+
+{
+    for(i=1;i<=NF;i++) {
+
+        if($i ~ /^[0-9]+d$/) {
+
+            days=$i
+            gsub("d","",days)
+
+            if(days < threshold) {
+                print $0
+            }
+        }
+    }
+}
+')
+
+echo "$EXPIRING -------------"
+if [ -n "$EXPIRING" ]; then
+
+    echo "Kubernetes certificates expiring soon!"
+    echo "$EXPIRING"
+
+    BOT_TOKEN="YOUR_BOT_TOKEN"
+    CHAT_ID="YOUR_CHAT_ID"
+
+    MESSAGE="⚠️ Kubernetes certificates expiring soon:
+
+$EXPIRING"
+
+  echo "Send alert from here."
+
+else
+    echo "All certificates are healthy."
+fi
+```
