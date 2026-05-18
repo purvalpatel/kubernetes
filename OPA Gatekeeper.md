@@ -62,3 +62,42 @@ These 12 deployments violate policy
 without blocking them yet.
 
 Very useful for gradual rollout.
+
+## Gatekeeper vs Kyverno
+
+| Feature                | Gatekeeper  | Kyverno      |
+| ---------------------- | ----------- | ------------ |
+| Policy language        | Rego        | YAML         |
+| Flexibility            | Very high   | Medium       |
+| Ease of use            | Harder      | Easier       |
+| Enterprise usage       | Very common | Growing fast |
+| Kubernetes-native feel | Lower       | Higher       |
+
+## Kubernetes Native Way → LimitRange
+Gatekeeper
+```
+validate + deny
+```
+LimitRange
+```
+auto-default resources
+```
+
+Flow:
+```
+User deploys pod
+        ↓
+LimitRange adds defaults
+        ↓
+Gatekeeper validates rules
+        ↓
+Pod accepted
+```
+
+## Real world patterns
+| Task                  | Best Tool     |
+| --------------------- | ------------- |
+| Set default resources | LimitRange    |
+| Enforce policies      | Gatekeeper    |
+| Mutate manifests      | Kyverno       |
+| Namespace quotas      | ResourceQuota |
