@@ -203,7 +203,7 @@ or
 kubectl apply --server-side -f https://github.com/kserve/kserve/releases/latest/download/kserve.yaml
 ```
 
-For example, Model is stored in `s3://numol/test-purval/iris_model.pkl` <br>
+For example, Model is stored in `s3://purvAI/test-purval/iris_model.pkl` <br>
 
 ### STEP 3 -- Create secret in kubernetes for s3 :
 ```
@@ -248,7 +248,7 @@ spec:
   predictor:
     serviceAccountName: s3-sa
     sklearn:
-      storageUri: "s3://numol/test-purval/"
+      storageUri: "s3://purvAI/test-purval/"
       image: kserve/sklearnserver:latest
 ```
 

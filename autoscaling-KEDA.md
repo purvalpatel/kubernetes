@@ -446,7 +446,7 @@ apiVersion: http.keda.sh/v1alpha1
 kind: HTTPScaledObject
 metadata:
   name: sbdd-frontend1-scale
-  namespace: numol
+  namespace: purvAI
 spec:
   scaleTargetRef:
     name: sbdd-frontend1
@@ -530,7 +530,7 @@ apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
   name: sbdd-frontend-cron
-  namespace: numol
+  namespace: purvAI
 spec:
   scaleTargetRef:
     name: sbdd-frontend

@@ -9,7 +9,7 @@ Traces -> Jaeger/Tempo -> UI
 
 ### Step 1:  Istio Sidecar injected with the namespace.
 ```
-kubectl label namespace numol istio-injection=enabled
+kubectl label namespace purvAI istio-injection=enabled
 ```
 
 ### Step 2: Ensure Ingress & Sidecards expose metrics on port 15090.
@@ -425,13 +425,13 @@ Check with : `https://api.xxx.io:30687/`
 # Domain 1
 - port:
     number: 443
-    name: https-numol
+    name: https-purvAI
     protocol: HTTPS
   hosts:
-  - api.numol.io
+  - api.purvAI.io
   tls:
     mode: SIMPLE
-    credentialName: api-numol-io-cert
+    credentialName: api-purvAI-io-cert
 
 # Domain 2
 - port:
@@ -453,9 +453,9 @@ servers:
     name: https-443
     protocol: HTTPS
   hosts:
-  - api.numol.io
+  - api.purvAI.io
   - api.xyz.com
   tls:
     mode: SIMPLE
-    credentialName: api-numol-io-cert
+    credentialName: api-purvAI-io-cert
 ```

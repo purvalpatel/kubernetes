@@ -250,10 +250,10 @@ kubectl rollout restart deployment istio-ingressgateway -n istio-system
 
 Restart deployment of application:
 ```
-kubectl rollout restart deployment sbdd-frontend -n numol
+kubectl rollout restart deployment sbdd-frontend -n purvAI
 ```
 
-check:  https://api.numol.io:30687/
+check:  https://api.purvAI.io:30687/
 
 ### Traces are showing in jaeger UI
 

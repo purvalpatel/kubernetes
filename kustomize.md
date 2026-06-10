@@ -70,7 +70,7 @@ Combine these into one final output.
 ### 2️⃣ Override Container Images
 ```
 images:
-  - name: docker.merai.app/numol/user-service
+  - name: docker.merai.app/purvAI/user-service
     newTag: abc123
 ```
 Overrides image tag without editing deployment file. <br>
@@ -80,7 +80,7 @@ Very useful for CI/CD.
 ### 3️⃣ Add Labels to Everything
 ```
 commonLabels:
-  app: numol
+  app: purvAI
   environment: dev
 ```
 Adds labels to:
@@ -97,7 +97,7 @@ commonAnnotations:
 
 ### 5️⃣ Change Namespace Automatically
 ```
-namespace: numol-dev
+namespace: purvAI-dev
 ```
 Applies namespace to all resources.
 

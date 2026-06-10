@@ -12,7 +12,7 @@
 ### Anyone can read secrets:
 ```
 kubectl get secret my-secret -o jsonpath='{.data.password}' | base64 -d
-kubectl -n numol get secret mongo-secret -o jsonpath='{.data.MONGODB_URI}' | base64 -d
+kubectl -n purvAI get secret mongo-secret -o jsonpath='{.data.MONGODB_URI}' | base64 -d
 ```
 
 ##  Two main approches to use Valult secrets in Kubernetes deployment:
@@ -94,51 +94,51 @@ vault write auth/kubernetes/config \
 
 ### Step 3 — Create Secret in Vault
 ```
-vault kv put secret/numol/db \
-  username="numol_user" \
+vault kv put secret/purvAI/db \
+  username="purvAI_user" \
   password="supersecret123"
 
-## for s3 numol bucket credentials: ( reference only)
-vault kv put secret/numol/s3_numol \
+## for s3 purvAI bucket credentials: ( reference only)
+vault kv put secret/purvAI/s3_purvAI \
   S3_ACCESS_KEY="0B3AN861NUCZ5G1T61WT" \
   S3_SECRET_KEY="_pUoc4IqCbYX2LC87w7KU8Kfjg11gK83id50A408" \
   S3_ENDPOINT="http://mns3006.nuvo-ai.com"
 
 ## for mongo URL: ( reference only)
-vault kv put secret/numol/mongo \
-  MONGO_URI="mongodb://numol:Nuvo%402026@10.10.110.159:32017/numoldb?authMechanism=SCRAM-SHA-256&directConnection=true" \
+vault kv put secret/purvAI/mongo \
+  MONGO_URI="mongodb://purvAI:Nuvo%402026@10.10.110.159:32017/purvAIdb?authMechanism=SCRAM-SHA-256&directConnection=true" \
   JWT_SECRET="your-secret"
 ```
 
 ### Step 4 — Create Policy
 - Create policy which contains secret.
 ```
-## add secret s3_num into policy numol-policy 
-vault policy write numol-policy - <<EOF
-path "secret/data/numol/s3_numol" {
+## add secret s3_num into policy purvAI-policy 
+vault policy write purvAI-policy - <<EOF
+path "secret/data/purvAI/s3_purvAI" {
   capabilities = ["read"]
 }
-path "secret/metadata/numol/s3_numol" {
+path "secret/metadata/purvAI/s3_purvAI" {
   capabilities = ["read"]
 }
 EOF
 
-## Wildcard Policy for all secrets under numol path:
+## Wildcard Policy for all secrets under purvAI path:
 ------------------------------------------------
-vault policy write numol-policy - <<EOF
-path "secret/data/numol/*" {
+vault policy write purvAI-policy - <<EOF
+path "secret/data/purvAI/*" {
   capabilities = ["read"]
 }
-path "secret/metadata/numol/*" {
+path "secret/metadata/purvAI/*" {
   capabilities = ["read"]
 }
 EOF
 
 ## for mongo URL: [Reference only]
-## add mongo secret into numol-mongo-policy
+## add mongo secret into purvAI-mongo-policy
 
-vault policy write numol-mongo-policy - <<EOF
-path "secret/data/numol/mongo" {
+vault policy write purvAI-mongo-policy - <<EOF
+path "secret/data/purvAI/mongo" {
   capabilities = ["read"]
 }
 EOF
@@ -146,17 +146,17 @@ EOF
 
 ### Step 5 — Create Role (bind to K8s)
 ```
-vault write auth/kubernetes/role/numol-role \
-  bound_service_account_names=numol-sa \        ## service account name
-  bound_service_account_namespaces=numol \      ## namespace
-  policies=numol-policy \                       ## policy added here.
+vault write auth/kubernetes/role/purvAI-role \
+  bound_service_account_names=purvAI-sa \        ## service account name
+  bound_service_account_namespaces=purvAI \      ## namespace
+  policies=purvAI-policy \                       ## policy added here.
   ttl=1h
 
 ## If already exists [Update with new Policy]:
-vault write auth/kubernetes/role/numol-role \
-  bound_service_account_names=numol-sa \
-  bound_service_account_namespaces=numol \
-  policies="numol-policy,numol-s3-policy,numol-mongo-policy" \
+vault write auth/kubernetes/role/purvAI-role \
+  bound_service_account_names=purvAI-sa \
+  bound_service_account_namespaces=purvAI \
+  policies="purvAI-policy,purvAI-s3-policy,purvAI-mongo-policy" \
   ttl=1h
 
 ```
@@ -172,8 +172,8 @@ kubectl apply -f https://raw.githubusercontent.com/hashicorp/vault-k8s/main/depl
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: numol-sa
-  namespace: numol
+  name: purvAI-sa
+  namespace: purvAI
 ```
 Apply:
 ```
@@ -187,7 +187,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: s3-test-deployment
-  namespace: numol
+  namespace: purvAI
 spec:
   replicas: 1
   selector:
@@ -199,21 +199,21 @@ spec:
         app: s3-test
       annotations:
         vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/role: "numol-role"
+        vault.hashicorp.com/role: "purvAI-role"
 
         # Inject S3 secret
-        vault.hashicorp.com/agent-inject-secret-s3: "secret/data/numol/s3_numol"
+        vault.hashicorp.com/agent-inject-secret-s3: "secret/data/purvAI/s3_purvAI"
 
         # Convert secret to env variables
         vault.hashicorp.com/agent-inject-template-s3: |
-          {{- with secret "secret/data/numol/s3_numol" -}}
+          {{- with secret "secret/data/purvAI/s3_purvAI" -}}
           export AWS_ACCESS_KEY_ID="{{ .Data.data.S3_ACCESS_KEY }}"
           export AWS_SECRET_ACCESS_KEY="{{ .Data.data.S3_SECRET_KEY }}"
           {{- end }}
         sidecar.istio.io/inject: "false"        ## Do not inject istio for this pod. because vault pods are running without istio.
 
     spec:
-      serviceAccountName: numol-sa
+      serviceAccountName: purvAI-sa
 
       containers:
       - name: aws-cli
@@ -244,7 +244,7 @@ kubectl apply -f deployment.yaml
 
 Check logs:
 ```
-kubectl logs -n numol deploy/test-app
+kubectl logs -n purvAI deploy/test-app
 ```
 You should see:
 ```
@@ -317,17 +317,17 @@ vault auth enable kubernetes
 
 - Create Secret:
 ```BASH
-vault kv put secret/numol/mongo \
-  MONGO_URI="mongodb://numol:Nuvo%402026@10.10.110.159:32017/numoldb?authMechanism=SCRAM-SHA-256&directConnection=true" \
+vault kv put secret/purvAI/mongo \
+  MONGO_URI="mongodb://purvAI:Nuvo%402026@10.10.110.159:32017/purvAIdb?authMechanism=SCRAM-SHA-256&directConnection=true" \
   JWT_SECRET="your-secret"
 ```
 
 Create Role:
 ```BASH
-vault write auth/kubernetes/role/numol-role \
-  bound_service_account_names=numol-sa \
-  bound_service_account_namespaces=numol \
-  policies=numol-policy \
+vault write auth/kubernetes/role/purvAI-role \
+  bound_service_account_names=purvAI-sa \
+  bound_service_account_namespaces=purvAI \
+  policies=purvAI-policy \
   ttl=1h
 ```
 
@@ -335,11 +335,11 @@ vault write auth/kubernetes/role/numol-role \
 
 Create Policy if not exists:
 ```BASH
-vault policy write numol-policy - <<EOF
-path "secret/data/numol/*" {
+vault policy write purvAI-policy - <<EOF
+path "secret/data/purvAI/*" {
   capabilities = ["read"]
 }
-path "secret/metadata/numol/*" {
+path "secret/metadata/purvAI/*" {
   capabilities = ["read"]
 }
 EOF
@@ -349,17 +349,17 @@ Every time you add a new secret path you must update the policy to include it. O
 
 Below is the sample: [ For reference only.]
 ```
-kubectl exec -n vault vault-0 -- vault policy write numol-policy - <<EOF
-path "secret/data/numol/mongo" {
+kubectl exec -n vault vault-0 -- vault policy write purvAI-policy - <<EOF
+path "secret/data/purvAI/mongo" {
   capabilities = ["read"]
 }
-path "secret/metadata/numol/mongo" {
+path "secret/metadata/purvAI/mongo" {
   capabilities = ["read"]
 }
-path "secret/data/numol/s3_numol" {
+path "secret/data/purvAI/s3_purvAI" {
   capabilities = ["read"]
 }
-path "secret/metadata/numol/s3_numol" {
+path "secret/metadata/purvAI/s3_purvAI" {
   capabilities = ["read"]
 }
 EOF
@@ -370,8 +370,8 @@ EOF
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: numol-sa
-  namespace: numol
+  name: purvAI-sa
+  namespace: purvAI
 ```
 
 6. Create VaultConnection.
@@ -380,7 +380,7 @@ apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultConnection
 metadata:
   name: vault-connection
-  namespace: numol
+  namespace: purvAI
 spec:
   address: http://vault.vault.svc.cluster.local:8200
   skipTLSVerify: true
@@ -392,15 +392,15 @@ spec:
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultAuth
 metadata:
-  name: numol-vault-auth
-  namespace: numol
+  name: purvAI-vault-auth
+  namespace: purvAI
 spec:
   vaultConnectionRef: vault-connection
   method: kubernetes
   mount: kubernetes
   kubernetes:
-    role: numol-role        # ← role you already created in vault
-    serviceAccount: numol-sa
+    role: purvAI-role        # ← role you already created in vault
+    serviceAccount: purvAI-sa
 
 ```
 8. Create VaultStaticSecret
@@ -408,25 +408,25 @@ spec:
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultStaticSecret
 metadata:
-  name: mongo-numol-secret
-  namespace: numol
+  name: mongo-purvAI-secret
+  namespace: purvAI
 spec:
   type: kv-v2
   mount: secret
-  path: numol/mongo          # ← vault path without secret/data prefix
+  path: purvAI/mongo          # ← vault path without secret/data prefix
   destination:
-    name: mongo-numol-k8s-secret   # ← K8s secret name VSO will create
+    name: mongo-purvAI-k8s-secret   # ← K8s secret name VSO will create
     create: true
   refreshAfter: 30s
-  vaultAuthRef: numol-vault-auth
+  vaultAuthRef: purvAI-vault-auth
 
 ```
 
 Verify staticsecret is created or not:
 - No need to create Kubernetes secret manually, it will get created automatically by VSO.
 ```BASH
-kubectl get vaultstaticsecret -n numol
-kubectl get secret -n numol
+kubectl get vaultstaticsecret -n purvAI
+kubectl get secret -n purvAI
 ```
 
 9. Sample deployment which uses the secret:
@@ -436,7 +436,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: mongo-test-script
-  namespace: numol
+  namespace: purvAI
 data:
   test.py: |
     import os
@@ -464,7 +464,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mongo-test
-  namespace: numol
+  namespace: purvAI
 spec:
   replicas: 1
   selector:
@@ -491,7 +491,7 @@ spec:
         - name: MONGO_URI
           valueFrom:
             secretKeyRef:
-              name: mongo-numol-k8s-secret
+              name: mongo-purvAI-k8s-secret
               key: MONGO_URI
 
       volumes:
@@ -502,31 +502,31 @@ spec:
 
 Verify VSO create the K8s secret:
 ```
-kubectl get secret s3-numol-k8s-secret -n numol
-kubectl describe secret s3-numol-k8s-secret -n numol
+kubectl get secret s3-purvAI-k8s-secret -n purvAI
+kubectl describe secret s3-purvAI-k8s-secret -n purvAI
 ```
 
 ## Add New Secret Steps:
 Step 1: Put Secret in Vault
 ```
-kubectl exec -n vault vault-0 -- vault kv put secret/numol/s3_numol \
+kubectl exec -n vault vault-0 -- vault kv put secret/purvAI/s3_purvAI \
   S3_ACCESS_KEY="your-access-key" \
   S3_SECRET_KEY="your-secret-key" \
   S3_ENDPOINT="http://mns3006.nuvo-ai.com"
 ```
 Step 2: Update Policy to include new secret path
 ```
-kubectl exec -n vault vault-0 -- vault policy write numol-policy - <<EOF
-path "secret/data/numol/mongo" {
+kubectl exec -n vault vault-0 -- vault policy write purvAI-policy - <<EOF
+path "secret/data/purvAI/mongo" {
   capabilities = ["read"]
 }
-path "secret/metadata/numol/mongo" {
+path "secret/metadata/purvAI/mongo" {
   capabilities = ["read"]
 }
-path "secret/data/numol/s3_numol" {
+path "secret/data/purvAI/s3_purvAI" {
   capabilities = ["read"]
 }
-path "secret/metadata/numol/s3_numol" {
+path "secret/metadata/purvAI/s3_purvAI" {
   capabilities = ["read"]
 }
 EOF
@@ -538,17 +538,17 @@ Step 3: Create new VaultStaticSecret for the new secret
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultStaticSecret
 metadata:
-  name: s3-numol-secret          # ← new name for this VSS
-  namespace: numol
+  name: s3-purvAI-secret          # ← new name for this VSS
+  namespace: purvAI
 spec:
   type: kv-v2
   mount: secret
-  path: numol/s3_numol           # ← new vault path
+  path: purvAI/s3_purvAI           # ← new vault path
   destination:
-    name: s3-numol-k8s-secret    # ← new K8s secret name VSO will create
+    name: s3-purvAI-k8s-secret    # ← new K8s secret name VSO will create
     create: true
   refreshAfter: 30s
-  vaultAuthRef: numol-vault-auth  # ← same, already exists
+  vaultAuthRef: purvAI-vault-auth  # ← same, already exists
 ```
 Add to your deployment.yaml:
 ```YAML
@@ -556,9 +556,9 @@ envFrom:
   - configMapRef:
       name: sbdd-service-config
   - secretRef:
-      name: mongo-numol-k8s-secret   # existing
+      name: mongo-purvAI-k8s-secret   # existing
   - secretRef:
-      name: s3-numol-k8s-secret   
+      name: s3-purvAI-k8s-secret   
 ```
 
 ### For EVERY new secret:
@@ -602,21 +602,21 @@ vault policy list
 ```
 2.  List attached policy with this role:
 ```
-vault read auth/kubernetes/role/numol-role
+vault read auth/kubernetes/role/purvAI-role
 ```
 3. Delete secret:
 ```
-vault kv delete secret/numol/s3_numol
+vault kv delete secret/purvAI/s3_purvAI
 ## delete permenantly with all versions.
-vault kv metadata delete secret/numol/s3_numol
+vault kv metadata delete secret/purvAI/s3_purvAI
 ```
 4. delete policy
 ```
-vault policy delete numol-policy
+vault policy delete purvAI-policy
 ```
 5. delete role
 ```
-vault delete auth/kubernetes/role/numol-role
+vault delete auth/kubernetes/role/purvAI-role
 ```
 6. List roles:
 ```
@@ -624,7 +624,7 @@ vault list auth/kubernetes/role
 ```
 7. List secrets:
 ```
-vault kv get secret/numol/s3_numol
+vault kv get secret/purvAI/s3_purvAI
 ```
 8. Verify kubernetes /auth is configured or not:
 ```
@@ -649,7 +649,7 @@ vault audit list
 ### Troubleshooting:
 - Get logs of specific container from the pod:
 ```
-kubectl logs -n numol s3-test-deployment-57f5974df8-jwlb6 -c vault-agent-init
+kubectl logs -n purvAI s3-test-deployment-57f5974df8-jwlb6 -c vault-agent-init
 ```
 - If pods running in namespace is with the istio envoy and pod running inside vault namespace are without istio envoy then it will not connect.
 
