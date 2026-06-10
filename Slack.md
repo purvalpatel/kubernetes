@@ -13,10 +13,10 @@ Slack is used for sending alerts like ntfy.
 Test Payload:
 ```
 # Simple alert
-curl -X POST --data-urlencode "payload={\"channel\": \"##nuvo-alerts\", \"text\": \"this is for testing.\"}" https://hooks.slack.com/services/xxxx/xxxx/xxxxx
+curl -X POST --data-urlencode "payload={\"channel\": \"##purval-alerts\", \"text\": \"this is for testing.\"}" https://hooks.slack.com/services/xxxx/xxxx/xxxxx
 
 # Alert with specific Emoji
-curl -X POST --data-urlencode "payload={\"channel\": \"##nuvo-alerts\", \"username\": \"webhookbot\", \"text\": \"This is for testing.\"}" https://hooks.slack.com/services/xxxx/xxxx/xxxxx
+curl -X POST --data-urlencode "payload={\"channel\": \"##purval-alerts\", \"username\": \"webhookbot\", \"text\": \"This is for testing.\"}" https://hooks.slack.com/services/xxxx/xxxx/xxxxx
 ```
 
 Use Slack for sending alerts from kubernetes:

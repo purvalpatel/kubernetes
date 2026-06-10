@@ -93,7 +93,7 @@ https://server-ip:30569 <br>
 
 If port 30569 port is globally not allowed then you can check by forwarding it with ssh. <br>
 ```
-ssh -L 30569:localhost:30569 nuvo_admin@xx.xx.xx.xx -p2222
+ssh -L 30569:localhost:30569 purval_admin@xx.xx.xx.xx -p2222
 ```
 Now open local machine broswer and open below link, <br> 
 https://localhost:30569 <br>

@@ -102,7 +102,7 @@ vault kv put secret/purvAI/db \
 vault kv put secret/purvAI/s3_purvAI \
   S3_ACCESS_KEY="0GB3ADN861NUCZ5G1T61WT" \
   S3_SECRET_KEY="_pUoc4DIqCGbYX2LC87w7KU8Kfjg11gK83id50A408" \
-  S3_ENDPOINT="http://mns3006.nuvo-ai.com"
+  S3_ENDPOINT="http://mns3006.purval-ai.com"
 
 ## for mongo URL: ( reference only)
 vault kv put secret/purvAI/mongo \
@@ -230,7 +230,7 @@ spec:
 
             echo "Listing buckets from NetApp S3..."
             aws s3 ls \
-              --endpoint-url http://mns3006.nuvo-ai.com \
+              --endpoint-url http://mns3006.purval-ai.com \
               --no-verify-ssl
 
             sleep 3600
@@ -318,7 +318,7 @@ vault auth enable kubernetes
 - Create Secret:
 ```BASH
 vault kv put secret/purvAI/mongo \
-  MONGO_URI="mongodb://purvAI:Nuvo%402026@10.10.110.159:32017/purvAIdb?authMechanism=SCRAM-SHA-256&directConnection=true" \
+  MONGO_URI="mongodb://purvAI:purval%402026@10.10.110.159:32017/purvAIdb?authMechanism=SCRAM-SHA-256&directConnection=true" \
   JWT_SECRET="your-secret"
 ```
 
@@ -512,7 +512,7 @@ Step 1: Put Secret in Vault
 kubectl exec -n vault vault-0 -- vault kv put secret/purvAI/s3_purvAI \
   S3_ACCESS_KEY="your-access-key" \
   S3_SECRET_KEY="your-secret-key" \
-  S3_ENDPOINT="http://mns3006.nuvo-ai.com"
+  S3_ENDPOINT="http://mns3006.purval-ai.com"
 ```
 Step 2: Update Policy to include new secret path
 ```

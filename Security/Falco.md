@@ -68,7 +68,7 @@ helm upgrade falco falcosecurity/falco -n falco \
   --set falco.httpOutput.url=http://falcosidekick:2801/ \
   --set falcosidekick.config.minimumpriority=debug \
   --set falcosidekick.config.slack.webhookurl="https://hooks.slack.com/services/T0XXX/B0XXX/XXXX" \
-  --set falcosidekick.config.slack.channel="#nuvo-alerts" \
+  --set falcosidekick.config.slack.channel="#purval-alerts" \
   --set falcosidekick.config.slack.username="Falco"
 ```
 

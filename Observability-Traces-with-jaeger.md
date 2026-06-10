@@ -119,7 +119,7 @@ trace.get_tracer_provider().add_span_processor(
     BatchSpanProcessor(exporter)
 )
 
-with tracer.start_as_current_span("nuvo-test-span"):
+with tracer.start_as_current_span("purval-test-span"):
     print("Trace sent successfully")
 EOF
 ```
