@@ -100,13 +100,13 @@ vault kv put secret/purvAI/db \
 
 ## for s3 purvAI bucket credentials: ( reference only)
 vault kv put secret/purvAI/s3_purvAI \
-  S3_ACCESS_KEY="0B3AN861NUCZ5G1T61WT" \
-  S3_SECRET_KEY="_pUoc4IqCbYX2LC87w7KU8Kfjg11gK83id50A408" \
+  S3_ACCESS_KEY="0GB3ADN861NUCZ5G1T61WT" \
+  S3_SECRET_KEY="_pUoc4DIqCGbYX2LC87w7KU8Kfjg11gK83id50A408" \
   S3_ENDPOINT="http://mns3006.nuvo-ai.com"
 
 ## for mongo URL: ( reference only)
 vault kv put secret/purvAI/mongo \
-  MONGO_URI="mongodb://purvAI:Nuvo%402026@10.10.110.159:32017/purvAIdb?authMechanism=SCRAM-SHA-256&directConnection=true" \
+  MONGO_URI="mongodb://purvAI:Test%402026@10.10.10.7:32017/purvAIdb?authMechanism=SCRAM-SHA-256&directConnection=true" \
   JWT_SECRET="your-secret"
 ```
 
