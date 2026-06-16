@@ -14,7 +14,7 @@ kubectl create namespace cattle-system
 3. Install Rancher with helm.
 Install Rancher with Helm and Your Chosen Certificate Option.
 ```
-helm install rancher rancher-stable/rancher --namespace cattle-system --set hostname=10.10.110.25.sslip.io --set bootstrapPassword=YOUR_PASSWORD --set ingress.tls.source=secret --set replicas=1 --set ingress.nodePort.enabled=true --set ingress.nodePort.httpsPort=30443 
+helm install rancher rancher-stable/rancher --namespace cattle-system --set hostname=x.x.110.25.sslip.io --set bootstrapPassword=YOUR_PASSWORD --set ingress.tls.source=secret --set replicas=1 --set ingress.nodePort.enabled=true --set ingress.nodePort.httpsPort=30443 
 ```
 
 Here, <br>
@@ -23,7 +23,7 @@ Here, <br>
 - I will provide my own SSL certificate and key inside a Kubernetes Secret.
 
 For example if your server have domain and SSL then you can use that Certificates. <br>
-Else Generate Certificates for 10.10.110.25.sslip.io <br>
+Else Generate Certificates for x.x.110.25.sslip.io <br>
 <br>
 <br>
 
@@ -33,7 +33,7 @@ Below steps are optional, <br>
 a. Generate Self-Signed Certificates:
 ```
 openssl req -x509 -newkey rsa:4096 -nodes -keyout tls.key -out tls.crt -days 365 \
-  -subj "/CN=10.10.110.25.sslip.io"
+  -subj "/CN=x.x.110.25.sslip.io"
 ```
 
 b. Create secret.
@@ -41,7 +41,7 @@ b. Create secret.
 kubectl -n cattle-system create secret tls tls-rancher-ingress \
   --cert=tls.crt --key=tls.key
 ```
-Now `https://10.10.110.25.sslip.io` works on your machine.
+Now `https://x.x.110.25.sslip.io` works on your machine.
 
 4. Verify
 ```

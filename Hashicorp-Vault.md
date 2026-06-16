@@ -106,7 +106,7 @@ vault kv put secret/purvAI/s3_purvAI \
 
 ## for mongo URL: ( reference only)
 vault kv put secret/purvAI/mongo \
-  MONGO_URI="mongodb://purvAI:Test%402026@10.10.10.7:32017/purvAIdb?authMechanism=SCRAM-SHA-256&directConnection=true" \
+  MONGO_URI="mongodb://purvAI:Test%402026@x.x.10.7:32017/purvAIdb?authMechanism=SCRAM-SHA-256&directConnection=true" \
   JWT_SECRET="your-secret"
 ```
 
@@ -318,7 +318,7 @@ vault auth enable kubernetes
 - Create Secret:
 ```BASH
 vault kv put secret/purvAI/mongo \
-  MONGO_URI="mongodb://purvAI:purval%402026@10.10.110.159:32017/purvAIdb?authMechanism=SCRAM-SHA-256&directConnection=true" \
+  MONGO_URI="mongodb://purvAI:purval%402026@x.x.110.159:32017/purvAIdb?authMechanism=SCRAM-SHA-256&directConnection=true" \
   JWT_SECRET="your-secret"
 ```
 

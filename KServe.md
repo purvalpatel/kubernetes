@@ -208,8 +208,8 @@ For example, Model is stored in `s3://purvAI/test-purval/iris_model.pkl` <br>
 ### STEP 3 -- Create secret in kubernetes for s3 :
 ```
 kubectl create secret generic s3-secret \
---from-literal=AWS_ACCESS_KEY_ID=0B3AxN861NUCZ5xxG1T61WTx \
---from-literal=AWS_SECRET_ACCESS_KEY=_pUoc4IqCbxxYX2LC87w7KU8Kfjxg11gK83id50A408
+--from-literal=AWS_ACCESS_KEY_ID=xxxxxxxxxxxxxxxxxxxxx \
+--from-literal=AWS_SECRET_ACCESS_KEY=_xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 OR by YAML, `s3-secret.yaml`    [Suggested]
 ```
@@ -223,8 +223,8 @@ metadata:
     serving.kserve.io/s3-verifyssl: "0"
 type: Opaque
 stringData:
-  AWS_ACCESS_KEY_ID: 0B3AN86s1NUCZd5G1T61WTx
-  AWS_SECRET_ACCESS_KEY: _pUoc4IqCbYXxx2LC87w7KU8Kfjg11xgK83id50A408
+  AWS_ACCESS_KEY_ID: xxxxxxxxxxxxxxxxx
+  AWS_SECRET_ACCESS_KEY: _xxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 ### STEP 4 -- Create serviceAccount for Kserve, `serviceaccount.yaml`:
