@@ -87,7 +87,7 @@ spec:
     spec:
       containers:
       - name: fastapi-app
-        image: docker.merai.app/harshal/hf-model:0.2
+        image: docker.linux.app/harshal/hf-model:0.2
         ports:
         - containerPort: 8000
         env:
@@ -284,7 +284,7 @@ kubectl patch crd scaledobjects.keda.sh --type=merge -p '{"metadata":{"finalizer
 
 Forward Port from local:
 ```
-ssh -L 9095:localhost:9090 merai@10.x.x.x -pxxxx
+ssh -L 9095:localhost:9090 linux@10.x.x.x -pxxxx
 
 kubectl port-forward -n monitoring svc/prometheus-kube-prometheus-prometheus 9095:9090
 

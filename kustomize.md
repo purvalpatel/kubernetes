@@ -70,7 +70,7 @@ Combine these into one final output.
 ### 2️⃣ Override Container Images
 ```
 images:
-  - name: docker.merai.app/purvAI/user-service
+  - name: docker.linux.app/purvAI/user-service
     newTag: abc123
 ```
 Overrides image tag without editing deployment file. <br>

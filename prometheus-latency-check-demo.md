@@ -103,7 +103,7 @@ spec:
     spec:
       containers:
       - name: app
-        image: docker.merai.app/purval/cicd:2.0
+        image: docker.linux.app/purval/cicd:2.0
         ports:
         - containerPort: 8080
 ```

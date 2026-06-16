@@ -242,7 +242,7 @@ Kuberenetes can use below runtimes:
 
 Command for joining nodes:
 ```
-kubeadm join 10.10.110.22:6443 --token 8k5elt.852433dupe8bp53o \ --discovery-token-ca-cert-hash sha256:2ca59e3405dec39af108c05015630e27d478c454fd1b7d7c8d38573f76b4b356 
+kubeadm join x.x.110.22:6443 --token 8kd5elt.852433dufpe8bp53o \ --discovery-token-ca-cert-hash sha256:2ca59edf3405decg39af108c0h5015630e27d478c454fd1b7d7c8d38573f76b4b356 
 ```
 
 #### List existing token:
@@ -276,7 +276,7 @@ kubectl config view -o yaml | grep -i server
 
 So the final command for join cluster is:
 ```
-kubeadm join 10.10.20.37:6443 --token estw9q.qryflwiss25nnxxm \ --discovery-token-ca-cert-hash sha256:2ca59e3405dec39af108c05015630e27d478c454fd1b7d7c8d38573f76b4b356 
+kubeadm join x.x.20.37:6443 --token estw9q.qryflwiss25nnxxm \ --discovery-token-ca-cert-hash sha256:2ca59e3405dec39af108c05015630e27d478c454fd1b7d7c8d38573f76b4b356 
 ```
 
 List all resources:

@@ -110,7 +110,7 @@ spec:
     spec:
       containers:
       - name: fastapi-app
-        image: docker.merai.app/harshal/hf-model:0.2
+        image: docker.linux.app/harshal/hf-model:0.2
         ports:
         - containerPort: 8000
         env:
