@@ -1,3 +1,59 @@
+## Red Team Operation Management
+
+Penetration testing : 
+- Goal - Focuses on identifying and exploiting Vulnerabilities.
+- Duration - Days to 2 weeks
+Red Teaming : 
+- Goal - Emulate real-world threat actors.
+- Duration - Weeks to months
+
+
+### Scoping Artifacts and Documentation
+- Statement of Work (SoW)
+- Rules of Engagement (RoE)
+- Thread Profile Summary
+- Operational Playbook
+- Risk Acceptance Form
+
+### Primary Objective of Red Team Operations
+- Testing Detection Capabilities
+- Measuring Incendent Response
+- Validating Controls in Production Environments
+- Demonstrating Business Risk
+
+### Tools Examples for Red Team Infrastructure
+
+| Component	| Tools |
+| --------- | ------ |
+| Redirector	| Apache, Nginx, Caddy, SOCat, fwdproxy |
+| C2 Servers |	Cobalt Strike, Mythic, Sliver, Covenant |
+| Payload Crafting	| MSFVenom, Donut, SharpLoader, Obfuscation via Nim or C# | 
+| Transport / Evasion |	DNSCat2, HTTPS C2 over CDN, ICMP tunneling, Frida, HTTP beacon randomization |
+
+
+###  Tools for Tracking Maturity
+
+- MITRE Engage: For mapping engagement goals to organizational security outcomes
+- ATT&CK Navigator: Visualize detection coverage and test history
+- Security Scorecards / Dashboards: Quantify progress over time
+- Threat-Informed Defense Maturity Matrix: Combine strategic and technical maturity assessment
+
+Attack Navigator - https://mitre-attack.github.io/attack-navigator/
+
+### Tooling to Support OpSec
+
+Some tools and techniques that support red team OpSec:
+
+- Invoke-PSObfuscation, ConfuserEx, ScareCrow (payload protection)
+- Terraform / Ansible for infrastructure as code with disposable assets
+- Sliver / Mythic with flexible C2 profiles and encrypted comms
+- Burp Collaborator / CanaryTokens for OPSEC boundary testing
+- Atomic Red Team / Caldera in isolated environments for detection risk analysis
+
+
+### Tool for Simulating Attacks on Cloud Environment for AWS and GCP:
+- Stratus red team
+
 # what is Red-teaming?
 Red teaming means intentionally trying to break or attack a system to find security weaknesses before a real attacker does.
 
