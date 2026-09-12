@@ -18,8 +18,8 @@ Red teaming means intentionally trying to break or attack a system to find secur
 **Supply chain**  → A third party model-plugin, or dependency maintainer.
 
 **NOTE:**
-- Prompt injection manipulates what happens at INFERENCE time via promt.
-- Data poisioning corrupts MODEL ITSELF at training time.
+> - Prompt injection manipulates what happens at INFERENCE time via promt.
+> - Data poisioning corrupts MODEL ITSELF at training time.
 
 They look similler but require completely different fixes.
 
@@ -111,11 +111,9 @@ Turn 5 → final harmful request
 **Property inference**  →  Discover hidden property.
 
 **NOTE:** <br>
-**Membership inference** answers a yes/no question about ONE record. 
-
-**Property inference** answers a statistical question about the ENTIRE dataset. 
-
-**Model inversion** actually reconstructs content. 
+> **Membership inference** answers a yes/no question about ONE record. <br>
+> **Property inference** answers a statistical question about the ENTIRE dataset.  <br>
+> **Model inversion** actually reconstructs content.  <br>
 
 ### 1.6 Availability Attacks: Making the model Expensive or Slow
 
@@ -132,7 +130,7 @@ much stuff.
 
 
 **Note:** 
-- If your only guardrails are content-based, availability attacks will sail straight through them. You need rate limiting and per-request size caps as an independent control layer.
+> - If your only guardrails are content-based, availability attacks will sail straight through them. You need rate limiting and per-request size caps as an independent control layer.
 
 ### 1.7 Data and model poisoning: the training-time attack
 **Poisoning** happens before the model is ever deployed.
@@ -143,9 +141,9 @@ An Attacker with write access to training or fine-tunning data:
 - Working fine in normal cases untill some phrase will triggers.
 
 **NOTE:** 
-- **Poisoning** corrupts the source of truth the model relies on.
-- **Injection** corrupts the single CONVERSATION.
-- A poisoned model or knowledge base produces bad output even with a perfectly begin prompt.
+> - **Poisoning** corrupts the source of truth the model relies on. <br>
+> - **Injection** corrupts the single CONVERSATION. <br>
+> - A poisoned model or knowledge base produces bad output even with a perfectly begin prompt. <br>
 
 
 # 2.OWSAP TOP 10 for LLM
@@ -256,7 +254,7 @@ Now there are additional concerns:
 - Data access
 
 **NOTE:** <br>
-The red-team program that only test the chatbox and ignores the agents tool integrations is not incomplete -- it is testing the wrong system.  
+> The red-team program that only test the chatbox and ignores the agents tool integrations is not incomplete -- it is testing the wrong system.  
 Agentic attack is where the real business impact usually lives.
 
 
@@ -347,7 +345,7 @@ The Acts sorts the AI systems into 4 tiers by risk, with obligations scaling acc
 - **Minimal Risk**  : No specific Obligations   :   an AI-powered spam filter.
 
 **NOTE:** <br>
-A conformity assessment is required for HIGH-RISK systems, not for every AI system. 
+> A conformity assessment is required for HIGH-RISK systems, not for every AI system. 
 
 ### 4.2 ISO/IEC 42001: an AI management system, not a scan.
 
@@ -723,9 +721,8 @@ Rug pull:
 A rug pull occurs when something that was already trusted is changed after approval.
 
 #### NOTE:
-Pin the exact version/hash and verify it before use.
-
-Approved once + changes later = Rug pull
+> Pin the exact version/hash and verify it before use. <br>
+> Approved once + changes later = Rug pull
 
 ### 9.5 Third-Party LLM API Risk
 Third-party LLM = supply-chain dependency + data-privacy risk.
