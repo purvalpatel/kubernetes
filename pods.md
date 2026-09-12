@@ -17,6 +17,11 @@ kubectl describe pod <pod-name> -n <namespace>
 kubectl logs <pod-name>
 ```
 
+#### Resize the running pod:
+```
+kubectl edit pod pod-1 subresource resize
+```
+
 #### Get the list of pods:
 ```
 kubectl get pods
